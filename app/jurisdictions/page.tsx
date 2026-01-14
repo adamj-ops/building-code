@@ -1,30 +1,43 @@
 "use client"
 
 import { useState } from "react"
+import dynamic from "next/dynamic"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { 
-  Map,
+  Map as MapIcon,
   List,
   Search,
   ChevronRight,
   Building2,
   Phone,
-  Mail,
-  Globe,
   CheckCircle2,
   AlertCircle,
   Clock
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Sidebar } from "@/components/layout/sidebar"
+import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import type { CountyData } from "@/components/map"
+
+// Dynamic import for Mapbox (requires browser APIs)
+const JurisdictionMap = dynamic(
+  () => import("@/components/map/jurisdiction-map").then(mod => mod.JurisdictionMap),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="h-[600px] rounded-lg border border-border overflow-hidden">
+        <Skeleton className="h-full w-full" />
+      </div>
+    )
+  }
+)
 
 // Mock data for jurisdictions
-const counties = [
+const counties: CountyData[] = [
   { 
     id: "hennepin", 
     name: "Hennepin County", 
@@ -201,6 +214,7 @@ export default function JurisdictionsPage() {
             {/* View Toggle */}
             <div className="flex items-center gap-1 p-1 rounded-lg bg-surface-2 border border-border">
               <button
+                type="button"
                 onClick={() => setViewMode("list")}
                 className={cn(
                   "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors",
@@ -213,6 +227,7 @@ export default function JurisdictionsPage() {
                 List
               </button>
               <button
+                type="button"
                 onClick={() => setViewMode("map")}
                 className={cn(
                   "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors",
@@ -221,7 +236,7 @@ export default function JurisdictionsPage() {
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <Map className="h-4 w-4" />
+                <MapIcon className="h-4 w-4" />
                 Map
               </button>
             </div>
@@ -237,6 +252,7 @@ export default function JurisdictionsPage() {
                   </CardHeader>
                   <CardContent className="space-y-1">
                     <button
+                      type="button"
                       onClick={() => setSelectedCounty(null)}
                       className={cn(
                         "w-full flex items-center justify-between p-2 rounded-lg text-sm transition-colors",
@@ -250,6 +266,7 @@ export default function JurisdictionsPage() {
                     </button>
                     {counties.map((county) => (
                       <button
+                        type="button"
                         key={county.id}
                         onClick={() => setSelectedCounty(county.name.replace(" County", ""))}
                         className={cn(
@@ -352,23 +369,29 @@ export default function JurisdictionsPage() {
             </div>
           ) : (
             /* Map View */
-            <Card className="overflow-hidden">
-              <CardContent className="p-0">
-                <div className="h-[600px] bg-surface-2 flex items-center justify-center">
-                  <div className="text-center">
-                    <Map className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Interactive Map</h3>
-                    <p className="text-sm text-muted-foreground max-w-md">
-                      Map view requires Mapbox integration. Click on counties and cities 
-                      to view building department details.
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-4">
-                      Add NEXT_PUBLIC_MAPBOX_TOKEN to enable
-                    </p>
+            <div className="space-y-4">
+              <JurisdictionMap counties={counties} />
+              
+              {/* Legend Card below map */}
+              <Card>
+                <CardContent className="py-4">
+                  <div className="flex items-center justify-center gap-8">
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="h-3 w-3 rounded-full bg-emerald-400" />
+                      <span className="text-muted-foreground">Complete data</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="h-3 w-3 rounded-full bg-amber-400" />
+                      <span className="text-muted-foreground">Partial data</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="h-3 w-3 rounded-full bg-zinc-400" />
+                      <span className="text-muted-foreground">State code only</span>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           )}
         </div>
       </main>

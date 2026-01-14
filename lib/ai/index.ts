@@ -1,0 +1,6 @@
+export { anthropic, CLAUDE_MODEL, EMBEDDING_DIMENSIONS } from './client'
+export { generateEmbedding, generateEmbeddings, cosineSimilarity } from './embeddings'
+export { generateSearchSummary, parseSearchQuery, generateCodeSectionSummary } from './summaries'
+export { hybridSearch } from './search'
+export type { SearchOptions, SearchResponse } from './search'
+export type { CodeSearchResult, SearchSummaryInput } from './summaries'

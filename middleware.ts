@@ -38,9 +38,22 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Public paths that don't require authentication
-  const publicPaths = ['/login', '/signup', '/forgot-password', '/auth/callback']
-  const isPublicPath = publicPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
+  const publicPaths = [
+    '/login', 
+    '/signup', 
+    '/forgot-password', 
+    '/auth/callback', 
+    '/api',
+    '/search',
+    '/codes',
+    '/jurisdictions',
+    '/fees',
+    '/permits'
+  ]
+  
+  const pathname = request.nextUrl.pathname
+  const isPublicPath = pathname === '/' || publicPaths.some((path) =>
+    pathname === path || pathname.startsWith(path + '/') || pathname.startsWith(path + '?')
   )
 
   // Redirect unauthenticated users to login (except for public paths)

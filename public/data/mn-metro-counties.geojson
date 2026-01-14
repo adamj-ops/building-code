@@ -1,0 +1,177 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "hennepin",
+      "properties": {
+        "id": "hennepin",
+        "name": "Hennepin County",
+        "dataStatus": "complete",
+        "cities": 45,
+        "lastUpdated": "Jan 10, 2026"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-93.77, 45.25],
+          [-93.52, 45.25],
+          [-93.22, 45.25],
+          [-93.22, 45.12],
+          [-93.22, 44.98],
+          [-93.22, 44.89],
+          [-93.52, 44.89],
+          [-93.77, 44.89],
+          [-93.77, 44.98],
+          [-93.77, 45.12],
+          [-93.77, 45.25]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ramsey",
+      "properties": {
+        "id": "ramsey",
+        "name": "Ramsey County",
+        "dataStatus": "complete",
+        "cities": 18,
+        "lastUpdated": "Jan 8, 2026"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-93.22, 45.12],
+          [-93.02, 45.12],
+          [-92.98, 45.07],
+          [-92.98, 44.98],
+          [-92.98, 44.89],
+          [-93.22, 44.89],
+          [-93.22, 44.98],
+          [-93.22, 45.12]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "dakota",
+      "properties": {
+        "id": "dakota",
+        "name": "Dakota County",
+        "dataStatus": "complete",
+        "cities": 34,
+        "lastUpdated": "Jan 5, 2026"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-93.32, 44.89],
+          [-93.02, 44.89],
+          [-92.73, 44.89],
+          [-92.73, 44.72],
+          [-92.73, 44.54],
+          [-93.02, 44.54],
+          [-93.32, 44.54],
+          [-93.32, 44.72],
+          [-93.32, 44.89]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "anoka",
+      "properties": {
+        "id": "anoka",
+        "name": "Anoka County",
+        "dataStatus": "partial",
+        "cities": 21,
+        "lastUpdated": "Dec 28, 2025"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-93.52, 45.42],
+          [-93.22, 45.42],
+          [-93.02, 45.42],
+          [-93.02, 45.25],
+          [-93.22, 45.25],
+          [-93.52, 45.25],
+          [-93.52, 45.42]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "washington",
+      "properties": {
+        "id": "washington",
+        "name": "Washington County",
+        "dataStatus": "partial",
+        "cities": 28,
+        "lastUpdated": "Dec 20, 2025"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-93.02, 45.25],
+          [-92.73, 45.25],
+          [-92.73, 45.07],
+          [-92.73, 44.89],
+          [-92.98, 44.89],
+          [-92.98, 44.98],
+          [-92.98, 45.07],
+          [-93.02, 45.12],
+          [-93.02, 45.25]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "scott",
+      "properties": {
+        "id": "scott",
+        "name": "Scott County",
+        "dataStatus": "state_only",
+        "cities": 17,
+        "lastUpdated": "Dec 15, 2025"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-93.77, 44.89],
+          [-93.52, 44.89],
+          [-93.32, 44.89],
+          [-93.32, 44.72],
+          [-93.32, 44.54],
+          [-93.52, 44.54],
+          [-93.77, 44.54],
+          [-93.77, 44.72],
+          [-93.77, 44.89]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "carver",
+      "properties": {
+        "id": "carver",
+        "name": "Carver County",
+        "dataStatus": "state_only",
+        "cities": 11,
+        "lastUpdated": "Dec 10, 2025"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-94.02, 45.07],
+          [-93.77, 45.07],
+          [-93.77, 44.89],
+          [-93.77, 44.72],
+          [-94.02, 44.72],
+          [-94.02, 44.89],
+          [-94.02, 45.07]
+        ]]
+      }
+    }
+  ]
+}

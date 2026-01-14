@@ -1,54 +1,83 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { NextResponse } from 'next/server'
+import { hybridSearch, SearchOptions } from '@/lib/ai'
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { query, jurisdiction, filters, options } = body
+    const { query, jurisdiction, filters, options } = body as {
+      query: string
+      jurisdiction?: string
+      filters?: {
+        code_types?: string[]
+        categories?: string[]
+        include_amendments?: boolean
+      }
+      options?: {
+        include_ai_summary?: boolean
+        limit?: number
+        offset?: number
+      }
+    }
 
     if (!query || typeof query !== 'string') {
       return NextResponse.json(
-        { error: 'Query is required' },
+        { error: 'Query parameter is required' },
         { status: 400 }
       )
     }
 
-    const supabase = await createClient()
-
-    // For now, return mock data
-    // TODO: Implement actual search with pgvector embeddings
-    const mockResults = [
-      {
-        id: "1",
-        source: "IRC 2020",
-        section: "R312.1",
-        title: "Guards Required",
-        text: "Guards shall be provided on open-sided walking surfaces, including stairs, ramps and landings, that are located more than 30 inches measured vertically to the floor or grade below.",
-        relevance_score: 0.95,
-        local_amendments: []
-      }
-    ]
-
-    const response = {
-      query_interpretation: {
-        intent: "requirement_lookup",
-        entities: query.split(' ').filter((w: string) => w.length > 3),
-        jurisdiction_resolved: jurisdiction ? {
-          name: jurisdiction,
-          type: "city",
-          county: "Hennepin"
-        } : null
+    // Transform the request to match our internal API
+    const searchOptions: SearchOptions = {
+      query,
+      jurisdiction,
+      filters: {
+        codeTypes: filters?.code_types,
+        categories: filters?.categories,
+        includeAmendments: filters?.include_amendments
       },
-      results: mockResults,
-      ai_summary: options?.include_ai_summary 
-        ? `Based on your search for "${query}", here are the relevant code sections...`
-        : null,
-      related_sections: []
+      options: {
+        includeAiSummary: options?.include_ai_summary ?? true,
+        limit: options?.limit || 20,
+        offset: options?.offset || 0
+      }
     }
 
-    return NextResponse.json(response)
+    const result = await hybridSearch(searchOptions)
+
+    // Transform the response to match the API spec
+    return NextResponse.json({
+      query_interpretation: {
+        intent: result.queryInterpretation.intent,
+        entities: result.queryInterpretation.entities,
+        jurisdiction_resolved: {
+          id: result.queryInterpretation.jurisdictionResolved.id,
+          name: result.queryInterpretation.jurisdictionResolved.name,
+          type: result.queryInterpretation.jurisdictionResolved.type,
+          county: result.queryInterpretation.jurisdictionResolved.county
+        }
+      },
+      results: result.results.map(r => ({
+        id: r.id,
+        source: `${r.base_code_abbreviation || 'Code'} 2020`,
+        section: r.section_number,
+        title: r.section_title,
+        text: r.full_text,
+        summary: r.summary,
+        relevance_score: r.relevance_score,
+        local_amendments: r.local_amendments
+      })),
+      ai_summary: result.aiSummary,
+      related_sections: result.relatedSections.map(s => ({
+        id: s.id,
+        section: s.section,
+        title: s.title,
+        relationship: s.relationship
+      })),
+      total_count: result.totalCount,
+      has_more: result.hasMore
+    })
   } catch (error) {
-    console.error('Search error:', error)
+    console.error('Search API error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -56,25 +85,36 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+// Also support GET for simple searches
+export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const query = searchParams.get('q')
   const jurisdiction = searchParams.get('jurisdiction')
-
+  
   if (!query) {
     return NextResponse.json(
-      { error: 'Query parameter "q" is required' },
+      { error: 'Query parameter (q) is required' },
       { status: 400 }
     )
   }
 
-  // Redirect to POST handler logic
-  const response = await POST(
-    new NextRequest(request.url, {
-      method: 'POST',
-      body: JSON.stringify({ query, jurisdiction })
-    })
-  )
+  // Convert to POST request format
+  const body = {
+    query,
+    jurisdiction: jurisdiction || undefined,
+    options: {
+      include_ai_summary: searchParams.get('summary') !== 'false',
+      limit: parseInt(searchParams.get('limit') || '20'),
+      offset: parseInt(searchParams.get('offset') || '0')
+    }
+  }
 
-  return response
+  // Create a new request with the body
+  const postRequest = new Request(request.url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+
+  return POST(postRequest)
 }
